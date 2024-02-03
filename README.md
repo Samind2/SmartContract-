@@ -18,8 +18,8 @@ To set up and run this dApp locally, follow these steps:
 
 ### Prerequisites
 
-- Node.js installed on your machine (require)
-- Metamask extension (require)
+- Node.js installed on your machine (required)
+- Metamask extension (required)
 - Git (optional)
 
 ### Installation
