@@ -19,8 +19,10 @@ contract Transactions {
     }
 
     TransferStruct[] transactions;
+    mapping(uint256 => bool) public refundStatus;
 
     function addToBlockchain(address payable receiver, uint amount, string memory message, string memory keyword) public {
+        require(amount > 0, "Amount must be greater than zero.");
         transactionCount += 1;
         transactions.push(TransferStruct(msg.sender, receiver, amount, message, block.timestamp, keyword));
 
@@ -33,5 +35,17 @@ contract Transactions {
 
     function getTransactionCount() public view returns (uint256) {
         return transactionCount;
+    }
+
+    function requestRefund(uint256 transactionId) public {
+        require(transactionId < transactionCount, "Transaction does not exist.");
+        require(msg.sender == transactions[transactionId].sender, "Only the sender can request a refund.");
+        require(!refundStatus[transactionId], "Refund already processed.");
+
+        uint amount = transactions[transactionId].amount;
+        payable(msg.sender).transfer(amount); // Sending the amount back to the sender
+        refundStatus[transactionId] = true;
+
+        emit Transfer(msg.sender, transactions[transactionId].receiver, amount, "Refund", block.timestamp, "Refund");
     }
 }
