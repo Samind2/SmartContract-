@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
@@ -21,7 +21,8 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 );
 
 const Welcome = () => {
-  const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
+  const { currentAccount, connectWallet, handleChange, sendTransaction, requestRefund, formData, isLoading } = useContext(TransactionContext);
+  const [transactionId, setTransactionId] = useState(""); // State for transaction ID
 
   const handleSubmit = (e) => {
     const { addressTo, amount, keyword, message } = formData;
@@ -31,6 +32,15 @@ const Welcome = () => {
     if (!addressTo || !amount || !keyword || !message) return;
 
     sendTransaction();
+  };
+
+  const handleRefund = (e) => {
+    e.preventDefault();
+
+    if (!transactionId) return;
+
+    requestRefund(transactionId);
+    setTransactionId(""); // Clear the input after request
   };
 
   return (
@@ -112,6 +122,24 @@ const Welcome = () => {
                   Send now
                 </button>
               )}
+          </div>
+
+          {/* New section for refund request */}
+          <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism mt-5">
+            <Input
+              placeholder="Transaction ID"
+              name="transactionId"
+              type="text"
+              value={transactionId}
+              handleChange={(e) => setTransactionId(e.target.value)} // Handle transaction ID change
+            />
+            <button
+              type="button"
+              onClick={handleRefund}
+              className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer"
+            >
+              Request Refund
+            </button>
           </div>
         </div>
       </div>
